@@ -1,6 +1,7 @@
 FirewallTool
 ====================
-FirewallTool is a web application developed with the framework Ruby on Rails. It allows to design with a graphic interface a network with wires, servers, computer, phones, firewall, etc. The firewall can be configured using iptable rules. The iptable rules can be imported, or implemented using a GUI. 
+FirewallTool is a web application developed with the framework Ruby on Rails. It allows to design with a graphic interface a network with wires, servers, computer, phones, firewall, etc. The firewall can be configured using iptable rules. The iptable rules can be imported, or implemented using a GUI. Once, the network is implemented and the firewall rules defined you can start to simulate packet traffic or network attacks to test the rules defined in the firewall . 
+
 FirewallTool has a guaranteed compatibility in the browser Chrome
 
 Installation
