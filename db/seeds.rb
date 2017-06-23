@@ -7,9 +7,5 @@
 #   Mayor.create(name: 'Emanuel', city: cities.first)
 
 Rule.transaction do
-
-  User.create(email: "leoislinka@gmail.com", password: "password", password_confirmation: "password", is_admin: true)
-  User.create(email: "setwildo31@gmail.com", password: "password", password_confirmation: "password", is_admin: true)
-  User.create(email: "raulbeni@gmail.com", password: "password", password_confirmation: "password", is_admin: true)
-  User.create(email: "tripodevs@gmail.com", password: "password", password_confirmation: "password")
+  User.create(email: "tripodevs@gmail.com", password: "password", password_confirmation: "password", is_admin: true)
 end
