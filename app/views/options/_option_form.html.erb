@@ -1,0 +1,6 @@
+<%= form_for option, url: "#", html: {id: "option-form"} do |f| %>
+    <%= f.hidden_field :id, data: {value: option.id} %>
+    <%= f.label :attack_life, "Attack Time " %>
+    <%= f.number_field :attack_life, data: {value: option.attack_life}, min: 0, style: "width: 60px;" %>
+    <%= f.select :attack_time, Option.attack_time.options, {}, {data: {value: option.attack_time}, style: "width: 100px;"} %>
+<% end %>

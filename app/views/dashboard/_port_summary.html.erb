@@ -1,0 +1,26 @@
+<table class="table table-condensed table-striped table-bordered">
+    <thead>
+        <tr>
+          <td>Opened</td>
+          <td>Matched Rule</td>
+        </tr>
+    </thead>
+    <tbody>
+        <% @rules_by_port.each do |port, rules| %>
+            <% description_list = [] %>
+            <% rules.each do |rule|
+              description_list << rule.rule_to_string
+             end %>
+            <tr>
+              <td><%= port %></td>
+              <td>
+                <ul>
+                    <% description_list.each do |description| %>
+                        <li><%= description %></li>
+                    <% end %>
+                </ul>
+              </td>
+            </tr>
+        <% end %>
+    </tbody>
+</table>

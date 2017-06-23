@@ -1,0 +1,12 @@
+<%#= @ports_by_status %>;
+var context = $("#port-scan-modal");
+var loading = context.find(".loading");
+var startBtn = context.find(".start-btn");
+var summary = context.find(".summary");
+
+console.log(loading);
+console.log(startBtn);
+
+loading.addClass("hide");
+startBtn.removeClass("hide");
+summary.html("<%= j render("dashboard/port_summary", ports_by_status: @ports_by_status) %>");

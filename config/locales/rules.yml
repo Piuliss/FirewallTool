@@ -1,0 +1,13 @@
+en:
+  enumerize:
+    rule:
+      table:
+        filter: "filter"
+        nat: "nat"
+    policy:
+      table:
+        filter: "filter"
+        nat: "nat"
+  #syn_flood: "iptables -N syn_flood \n iptables -A INPUT -p tcp --syn -j syn_flood \n iptables -A syn_flood -m limit --limit %{limit}/%{unity} --limit-burst %{burst} -j RETURN \n iptables -A syn_flood -j DROP
+  #udp_flood: "iptables -N udp_flood \n iptables -A INPUT -p udp -j udp_flood \n iptables -A udp_flood -m state –state NEW –m recent –update –%{unity} %{limit} –hitcount %{hitcount} -j RETURN \n iptables -A udp_flood -j DROP"
+  #icmp_flood: "iptables -N icmp_flood \n iptables -A INPUT -p icmp -j icmp_flood \n iptables -A icmp_flood -m limit --limit %{limit}/%{unity} --limit-burst %{burst} -j RETURN \n iptables -A icmp_flood -j DROP"

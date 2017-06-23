@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>FirewallTools</title>
+  <%= stylesheet_link_tag    "application", media: "all", "data-turbolinks-track" => true %>
+  <%= javascript_include_tag "application", "data-turbolinks-track" => true %>
+  <%= csrf_meta_tags %>
+  <meta name="description" content="FirewallTools is an amazing tool to design computers network, program firewall iptables and run
+  simulation of how the packets flow in the network. Useful for students and professionals of the computers network area!" />
+  <link rel="shortcut icon" href="<%=image_path('firewalltools.ico')%>" type="image/x-icon">
+  <link rel="icon" href="<%=image_path('firewalltools.ico')%>" type="image/x-icon">
+</head>
+<body  style="background: url(<%=image_path('background4.png')%>) no-repeat center center fixed;
+        -webkit-background-size: cover;
+        -moz-background-size: cover;
+        -o-background-size: cover;
+        background-size: cover;" >
+<div id="message-container">
+  <%= flash_message %>
+</div>
+<%= yield %>
+<div class="row-fluid" style="color: #ffffff">
+  <p>FirewallTools © 2015 - Universidad Nacional de Itapúa - contact us: tripodevs@gmail.com. <a href="assets/TermsandConditions.pdf" target="_blank">Terms and Conditions</a> <a href="assets/FirewallToolsPrivacyPolicy.pdf" target="_blank">Privacy Policy</a>  </p>
+</div>
+
+<script type="text/javascript">
+    $(document).ready(function(){
+        messageEffect();
+    });
+</script>
+
+</body>
+</html>

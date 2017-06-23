@@ -1,0 +1,6 @@
+#Script generado por el sistema. 
+#Politicas.
+iptables -t filter -P FORWARD ACCEPT
+iptables -t filter -P OUTPUT DROP
+iptables -t filter -P INPUT DROP
+#Reglas

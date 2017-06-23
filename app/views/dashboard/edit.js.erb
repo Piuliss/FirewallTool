@@ -1,0 +1,58 @@
+//_controllerNetwork.diagramSaved = true;
+var graphic_network_id = '<%= @graphic_network.id %>';
+_controllerNetwork.setGraphicNetworkId(graphic_network_id);
+_listenerController.setGraphicNetworkId(graphic_network_id);
+_listenerController.inactiveAlert();
+var rulesAndPolicyContainer = $("#policy-and-rules-container");
+showFlashMessages("<%= flash_message %>");
+_controllerNetwork.removeAllElements();
+
+<% @network_components.each do |nc| %>
+    _controllerNetwork.addComponent('<%= nc.class.name %>', '<%= nc.posY  %>', '<%= nc.posX  %>', <%= nc.attributes.to_json.html_safe %> );
+<% end %>
+var pointA, pointB;
+<% @connections.each do |c| %>
+   pointA = document.getElementById("<%= c.source_object.class.name.downcase %>-<%= c.source_object.id %>");
+   pointB = document.getElementById("<%= c.destination_object.class.name.downcase %>-<%= c.destination_object.id %>");
+    _controllerNetwork.createGraphicConnections(pointA, pointB);
+<% end  %>
+var package_index, source_index, destination_index;
+<% @graphic_network.packages.each do |pack| %>
+     package_index = _controllerNetwork.addComponent('<%= pack.class.name %>', '<%= pack.posY  %>', '<%= pack.posX  %>', <%= pack.attributes.to_json.html_safe %> );
+     source_index = '<%= pack.source_object.type.downcase.to_s + "-" + pack.source_object.id.to_s %>';
+     destination_index = '<%= pack.destination_object.type.downcase.to_s + "-" + pack.destination_object.id.to_s %>';
+    _controllerNetwork.addSourceAndDestinationForPackageSaved(package_index, source_index, destination_index);
+<% end %>
+
+
+/* port scan related*/
+$("#port-scan-modal-container").html("<%= j render("port_scan_modal", firewall: @firewall) %>");
+$("#firewall-image").html("<%= j link_to(image_tag(@firewall.new_record? ? "radar-disabled.png" : "radar.png", size: "30x30", title: @firewall.new_record? ? "You don't have a firewall saved" : "Port Scan"), @firewall.new_record? ? "#" : "#port-scan-modal", id: "scan-btn", data: {toggle: :modal}) %>")
+$("#open-modal-container").html("<%= j render("open_modal", graphic_networks: @graphic_networks) %>");
+
+/* debugger section related */
+var debuggerImage = $("#debugger-link img");
+var debuggerContainer = $(".debugger-container");
+<% if @firewall.new_record? %>
+    debuggerImage.attr("src", "/assets/debug-disabled.png");
+    debuggerContainer.slideUp(250);
+<% else %>
+    debuggerImage.attr("src", "/assets/debug-add.png");
+<% end %>
+
+$("#option-form-container").html("<%= escape_javascript(render "options/option_form", option: @option) %>");
+
+$("#navbar").html('<%= escape_javascript( render 'navbar', graphic_network: @graphic_network, graphic_networks: @graphic_networks, demos_and_examples: @demos_and_examples) %>');
+
+$("#rules-container").html("<%= escape_javascript(render "rules/view_and_code", rules: @rules, policies: @policies, firewall: @firewall) %>");
+
+$(".debugger-container").slideUp(250);
+
+
+if(thereIsFirewall()){
+    rulesAndPolicyContainer.show();
+}else{
+    rulesAndPolicyContainer.hide();
+}
+
+_listenerController.activeAlert();

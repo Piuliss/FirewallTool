@@ -1,0 +1,104 @@
+<div class="row-fluid">
+  <div class="span10">
+    <div class="row-fluid">
+        <%= form_for @rule, url: add_rule_rules_path, remote: 'true' do |f| %>
+          <div class="span10" style="margin-left: 0;">
+            <div class="alert alert-error" style="display: none;" id="error_message">
+              Syntax error. The rule entered is not valid.
+            </div>
+            <div class="alert alert-success" style="display: none;" id="success_message">
+              The iptable rule is added correctly.
+            </div>
+
+            <%= text_field_tag :rule,'', id: 'input-iptables', class: "rule-input", placeholder: "add here an iptables rule and press enter" %>
+
+          </div>
+
+          <div class="span2">
+            <%= button_tag(type: 'submit', class: "btn btn-primary") do %>
+                <i class=" icon-plus icon-white"></i> Add
+            <% end %>
+          </div>
+
+        <% end %>
+    </div>
+  </div>
+  <div class="span2" style="margin-left: 0;">
+    <%= render "rules/upload_file" %>
+  </div>
+</div>
+
+<script>
+
+    $(function() {
+        var availableTags = [
+            "iptables",
+            "-t [filter | nat]",
+            "-A [INPUT | OUTPUT | FORWARD | PREROUTING | POSTROUTING]",
+            "-i [eth0 | eth1 |eth2]",
+            "-o [eth0 | eth1 | eth2]",
+            "-s [ip | network]",
+            "-d [ip | network]",
+            "-p [all | tcp | udp | icmp]",
+            "-P [INPUT | OUTPUT | FORWARD | PREROUTING | POSTROUTING]",
+            "--dport [numero de puerto destino]",
+            "--sport [numero de puerto origen]",
+            "-SNAT [ ip | network]",
+            "-DNAT [ip | network]",
+            "-j [ACCEPT | DROP | REJECT | SNAT | DNAT | MASQUERADE]",
+            "-m state --state [ESTABLISHED |& NEW |& RELATED]",
+            "INPUT",
+            "FORWARD",
+            "POSTROUTING",
+            "PREROUTING",
+            "ACCEPT",
+            "DROP",
+            "REJECT",
+            "MASQUERADE",
+            "tcp","all","udp","icmp",
+             "ESTABLISHED","NEW","RELATED",
+             "filter","nat"
+
+        ];
+        function split( val ) {
+            return val.split( /\s+/ );
+        }
+        function extractLast( term ) {
+            return split( term ).pop();
+        }
+
+        $( "#input-iptables" )
+            // don't navigate away from the field on tab when selecting an item
+                .bind( "keydown", function( event ) {
+                    if ( event.keyCode === $.ui.keyCode.TAB &&
+                            $( this ).data( "ui-autocomplete" ).menu.active ) {
+                        event.preventDefault();
+                    }
+                })
+                .autocomplete({
+
+                    source: function( request, response ) {
+                        // delegate back to autocomplete, but extract the last term
+                        response( $.ui.autocomplete.filter(
+                                availableTags, extractLast( request.term ) ) );
+                    },
+                    focus: function() {
+                        // prevent value inserted on focus
+                        return false;
+                    },
+                    select: function( event, ui ) {
+                        var terms = split( this.value );
+                        // remove the current input
+                        terms.pop();
+                        // add the selected item
+                        terms.push( ui.item.value );
+                        // add placeholder to get the comma-and-space at the end
+                        terms.push( "" );
+                        this.value = terms.join( " " );
+                        return false;
+                    }
+                });
+
+    });
+
+</script>

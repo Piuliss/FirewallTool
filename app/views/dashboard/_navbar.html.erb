@@ -1,0 +1,141 @@
+<div class="navbar navbar-static-top">
+  <div class="navbar-inner" style="background-image: none; background-color: black; box-shadow: none; -moz-box-shadow: none;">
+    <div class="container">
+      <%= image_tag("logo.png", style: "width: 65px;") %>
+      <h3 style="color: white; line-height: 20px; display: inline; vertical-align: middle;">FirewallTools</h3>
+    </div>
+  </div>
+</div>
+<% is_new = graphic_network.id.nil?%>
+<div class="navbar">
+  <div class="navbar-inner">
+    <div class="container">
+      <%= link_to is_new ? 'New Diagram': graphic_network.name, '#', class: 'brand'   %>
+        <ul class="nav">
+          <li class="dropdown">
+            <%= link_to "#", class: "dropdown-toggle", id: 'archivodrop', role: "button", data: {toggle: :dropdown} do  %>
+                File <b class="caret"></b>
+            <% end %>
+            <ul class="dropdown-menu" role="menu" aria-labelledby="archivodrop">
+              <li role="presentation"><%= link_to "New", new_dashboard_path, data:{target: '#'}, role: 'menuitem', method: :get %></li>
+              <li role="presentation"><%= link_to "Open ...", "#open-modal", data:{toggle: :modal}, role: 'menuitem' %></li>
+              <% unless demos_and_examples.blank? %>
+                  <li class="dropdown-submenu" role="presentation"><%= link_to "Demos & Examples", "#" %>
+                        <ul class="dropdown-menu">
+                          <% demos_and_examples.each do |gn| %>
+                              <li><%= link_to gn.name,edit_dashboard_path(gn.id), remote: true, data:{target: '#'}, method: :get   %></li>
+                          <% end %>
+                        </ul>
+                  </li>
+              <% end  %>
+              <li role="presentation" class="<%=  (is_new || (!current_user.is_admin? && graphic_network.is_public)) ?  'disabled' : '' %>">
+                <%= link_to "Save", "#", role: 'menuitem', class: !is_new ? 'update': '', data: {graphic_network_id: graphic_network.id } %>
+              </li>
+              <li role="presentation"><%= link_to "Save as...", "#save-as", role: 'menuitem', data:{toggle: 'modal'} %></li>
+              <% if current_user.is_admin? %>
+                  <li role="presentation"><%= link_to "Public Demos & Examples", demos_and_examples_dashboard_index_path, role: 'menuitem', method: :get  %></li>
+              <% end %>
+            </ul>
+          </li>
+          <li><%= link_to(image_tag("open.png", size: "20x20"), "#open-modal", data: {toggle: :modal}, title: "Open") %></li>
+
+              <% if !is_new && current_user.id == graphic_network.user_id %>
+                  <li>
+                    <%= link_to(image_tag("save.png", size: "20x20"), "#", class: "update", data: {graphic_network_id: graphic_network.id}, title: "Save") %>
+                  </li>
+              <% else %>
+                  <li>
+                    <%= link_to(image_tag("save.png", size: "20x20"), "#save-as", data: {toggle: :modal}, title: "Save as...") %>
+                  </li>
+              <% end %>
+
+        </ul>
+        <ul class="nav pull-right">
+          <li class="alert-changes-section" id="alert-changes-section"  style="display: none;">
+            <div class="alert alert-info">
+              <button type="button" class="close" data-dismiss="alert">&times;</button>
+              <strong>Diagram changed</strong>, please save it before run the simulation
+            </div>
+          </li>
+          <li><%= link_to(image_tag("exit.png", size: "20x20"), destroy_user_session_path, method: :delete, title: "Exit") %></li>
+        </ul>
+
+    </div>
+  </div>
+</div>
+
+<div id="save-as" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <%= form_for graphic_network, url: "#",html: {  class: 'form-horizontal' }  do |f| %>
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+        <h3>Save as...</h3>
+      </div>
+      <div class="modal-body">
+            <br/>
+            <div class="control-group">
+              <%= f.label :name, "Diagram name", class: 'control-label'%>
+              <div class="controls">
+                <%= f.text_field :name, id: "diagram-name", maxlength: "26", class: 'validate[required]' %>
+              </div>
+            </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn" data-dismiss="modal" aria-hidden="true">Cancel</button>
+        <%= f.submit 'Save', class: "btn btn-primary", id: 'save', tabindex:"10"%>
+        <!--<button class="btn btn-primary" id="save" tabindex="10" type="submit">Save</button>-->
+      </div>
+  <% end  %>
+</div>
+
+
+<script type="text/javascript">
+    $(document).ready(function(){
+        var modal_form = $("#save-as form");
+
+
+        $('.update').on("click",function(ev){
+            ev.preventDefault();
+            var elem = $(this);
+            var isDisabled = elem.parent().hasClass("disabled");
+            if(isDisabled){
+                return;
+            }
+            var graphic_network_id = elem.data('graphic-network-id');
+            _controllerNetwork.updateDiagram(graphic_network_id);
+        });
+        modal_form.submit(function(event){
+            event.preventDefault();
+            if(modal_form.validationEngine('validate')){
+                var diagramName = $("#diagram-name").val();
+                $('button.close').click();
+                _controllerNetwork.buildDiagram(diagramName);
+            }
+        });
+        modal_form.find("input").on('keypress', function(e) {
+            if (e.which == 13) modal_form.submit();
+        });
+        modal_form.validationEngine('attach',
+                {
+                    autoHidePrompt:true,
+                    autoHideDelay: 3000});
+
+        //Hide or show download_script_iptables button
+        var state = <%= @firewall.id.nil? %>;
+//        console.log(state);
+        if (state == true)   {
+            $("#download_script").hide();
+//            console.log("hide") ;
+        }
+        else {
+            $("#download_script").show();
+//            console.log("show");
+        }
+
+        $("#disabled-save").on("click", function(event){
+            event.preventDefault();
+            return false;
+        });
+
+
+    });
+</script>

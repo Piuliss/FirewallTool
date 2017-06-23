@@ -1,0 +1,118 @@
+<div class="row-fluid">
+<%= form_for firewall, url: "#", html: {id: "flood-form"} do |f| %>
+    <div class="row-fluid">
+      <div class="span4">
+        <%= f.label :syn_rules do %>
+            <%= f.check_box :syn_rules, data: {flood_container: "syn-container"} %>
+            Mitigate tcp attack
+        <% end %>
+      </div>
+      <div class="span4">
+        <%= f.label :udp_rules do %>
+            <%= f.check_box :udp_rules, data: {flood_container: "udp-container"} %>
+            Mitigate udp attack
+        <% end %>
+      </div>
+      <div class="span4">
+        <%= f.label :icmp_rules do %>
+            <%= f.check_box :icmp_rules, data: {flood_container: "icmp-container"} %>
+            Mitigate icmp attack
+        <% end %>
+      </div>
+    </div>
+
+    <div class="row-fluid">
+      <div class="span4">
+        <div id="syn-container">
+          <div class="row-fluid">
+            <div class="span3 text-right">
+              <%= f.label :syn_limit, "Limit:" %>
+            </div>
+            <div class="span9">
+              <%= f.text_field :syn_limit, class: "flood-input" %>
+            </div>
+          </div>
+          <div class="row-fluid">
+            <div class="span4 text-right">
+              <%= f.label :syn_unity, "Time in:" %>
+            </div>
+            <div class="span8">
+              <%= f.select :syn_unity, Firewall.syn_unity.options, {selected: "second"}, class: "flood-input"%>
+            </div>
+          </div>
+          <div class="row-fluid">
+            <div class="span3 text-right">
+              <%= f.label :syn_limit_burst, "Burst:" %>
+            </div>
+            <div class="span9">
+              <%= f.text_field :syn_limit_burst, class: "flood-input" %>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="span4">
+        <div id="udp-container">
+          <div class="row-fluid">
+            <div class="span3 text-right">
+              <%= f.label :udp_limit, "Limit:" %>
+            </div>
+            <div class="span9">
+              <%= f.text_field :udp_limit, class: "flood-input" %>
+            </div>
+          </div>
+          <div class="row-fluid">
+            <div class="span4 text-right">
+              <%= f.label :udp_unity, "Time in:" %>
+            </div>
+            <div class="span8">
+              <%= f.select :udp_unity, Firewall.udp_unity.options, {}, class: "flood-input"%>
+            </div>
+          </div>
+          <div class="row-fluid">
+            <div class="span3 text-right">
+              <%= f.label :udp_hitcount, "Hit Count:" %>
+            </div>
+            <div class="span9">
+              <%= f.text_field :udp_hitcount, class: "flood-input" %>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="span4">
+        <div id="icmp-container">
+          <div class="row-fluid">
+            <div class="span3 text-right">
+              <%= f.label :icmp_limit, "Limit:" %>
+            </div>
+            <div class="span9">
+              <%= f.text_field :icmp_limit, max: 999999999999999, class: "flood-input" %>
+            </div>
+          </div>
+          <div class="row-fluid">
+            <div class="span4 text-right">
+              <%= f.label :icmp_unity, "Time in:" %>
+            </div>
+            <div class="span8">
+              <%= f.select :icmp_unity, Firewall.icmp_unity.options, {}, class: "flood-input"%>
+            </div>
+          </div>
+          <div class="row-fluid">
+            <div class="span3 text-right">
+              <%= f.label :icmp_limit_burst, "Burst:" %>
+            </div>
+            <div class="span9">
+              <%= f.text_field :icmp_limit_burst, max: 999999999999999, class: "flood-input" %>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+<% end %>
+</div>
+
+<script type="text/javascript">
+  $(document).ready(function(){
+    $("input.flood-input").mask("9?9999999999",{placeholder:""});
+  });
+</script>

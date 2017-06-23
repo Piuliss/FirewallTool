@@ -1,0 +1,26 @@
+<div id="navbar">
+  <%= render 'navbar', demos_and_examples: @demos_and_examples, graphic_network: @graphic_network %>
+</div>
+
+<div id="main-page">
+    <%= form_for :demos_and_examples, url: public_demos_and_examples_dashboard_index_path, method: :put do |f| %>
+      <table style="width: 100%;">
+        <% @graphic_networks.each_slice(4) do |group| %>
+            <tr>
+              <% group.each do |gn| %>
+                <td>
+                  <%= check_box_tag "demos_and_examples[#{gn.id}]", 0, true, class: "hide inline" %>
+                  <%= check_box_tag "demos_and_examples[#{gn.id}]", 1, gn.is_public?, class: "inline", id: "demo-#{gn.id}" %>
+                 <%= label_tag "demo-#{gn.id}", gn.name, class: "inline" %>
+                </td>
+              <% end %>
+            </tr>
+        <% end %>
+      </table>
+      <div class="pull-right">
+        <%= f.submit "Public", class: "btn btn-primary" %>
+      </div>
+    <% end %>
+</div>
+
+<%= render "open_modal", graphic_networks: @graphic_networks %>

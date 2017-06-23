@@ -1,0 +1,177 @@
+@mixin to-box($color) {
+  border: 1px solid $color;
+  background-color: $color;
+  -moz-border-radius: 5px;
+  -webkit-border-radius: 5px;
+
+}
+.modal form {
+  margin-bottom: 0;
+}
+li.alert-changes-section{
+  .alert {
+    padding-top: 3px;
+    padding-bottom: 3px;
+    font-size: 12px;
+    margin-bottom: 0;
+    margin-top: 5px;
+
+  }
+}
+#main-page {
+  $color-box: #F9F9F9;
+  $height: 500px;
+  $border: #cacaca;
+  position: relative;
+  .sidebar-objects {
+    height: $height;
+    @include to-box($color-box);
+    ul {
+      margin: 0;
+      list-style: none;
+      li{
+        width: 45%;
+        display: inline-block;
+        img {
+          cursor: pointer;
+        }
+      }
+    }
+    .btn-side-bar {
+      padding-left: 5px;
+      padding-right: 5px;
+    }
+    border: 1px solid $border;
+    -moz-border-radius: 0px;
+    -webkit-border-radius: 0px;
+  }
+  .main-plain{
+    background-image: url('../assets/cuadriculado.png');
+    border: 1px solid $border;
+    height: $height;
+    margin-right: 5px;
+    .drag-clone{ cursor: pointer; }
+  }
+  .actions{
+    @include to-box($color-box);
+    height: 100px;
+  }
+  .console{
+    @include to-box(#151B54);
+    #console {
+      font-family: 'DejaVu Sans Mono', monospace;
+      background-color: #151B54;
+      color: #ffffff;
+      border:0;
+      min-height: 100%;
+      height: 100px;
+      width: 100%;
+      &:active, &:focus {
+        border:0;
+      }
+
+    }
+  }
+  .packet-description {
+    @include to-box($color-box);
+    height: 100px;
+  }
+
+  .rule-input{
+    width: 99%;
+  }
+
+  .arrow-up {
+    position: absolute;
+    width: 0;
+    height: 0;
+    border-left: 5px solid transparent;
+    border-right: 5px solid transparent;
+    border-bottom: 5px solid black;
+    bottom: 52px;
+    left: 50%;
+  }
+  .tooltip-inner {
+    color: black;
+    background-color: transparent;
+    font-weight: bold;
+  }
+
+}
+
+.flash{
+  padding: 10px 30px;
+}
+
+.sidebar-separator{
+  margin: 5px 0;
+}
+
+.max-width{
+  width: 100%;
+}
+.navbar .dropdown-menu{
+  z-index: 1040 !important;
+}
+
+#message-container{
+  z-index: 1032;
+}
+
+.green{
+  color: #47741A;
+}
+
+.red{
+  color: #CC0000;
+}
+
+.control-label2{
+  width: 55px !important;
+}
+
+.controls2{
+  margin-left: 65px !important;
+}
+
+
+.dl-class{
+  dt{
+    width: 110px;
+    float: left;
+    font-weight: normal;
+    font-size: 12px;
+  }
+  dd{
+    margin-left: 110px;
+    input{
+      height: 15px;
+      width: 60px;
+    }
+  }
+}
+
+.inline{
+  display: inline;
+}
+
+table.debugger-table{
+  width: 100%;
+  label{
+    font-size: 12px;
+  }
+  tbody tr td div{
+    font-size: 12px;
+    font-weight: bold;
+  }
+}
+
+div.debugger-container{
+  border: 1px solid #cacaca;
+  background-color: #f9f9f9;
+  width: 932px;
+}
+
+tr.matched td{
+  background-color: #fffa94 !important;
+}

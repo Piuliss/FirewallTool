@@ -1,0 +1,37 @@
+<script type="text/javascript">
+
+    $(function () {
+        var holder = $('#holder');
+        HOLDER_HEIGHT = holder.height();
+        HOLDER_WIDTH = holder.width();
+        raphael = Raphael("holder",HOLDER_WIDTH,HOLDER_HEIGHT);
+
+        document.getElementsByTagName('svg')[0].id = HOLDER_ID;
+        <% Constants::NETWORK_COMPONENTS.each do |nc| %>
+            setAttributeParamsForObjects('<%= nc %>', <%= eval(nc).column_names.to_json.html_safe %>);
+        <% end %>
+        var graphic_network_id =  '<%= @graphic_network.id.nil? ? @graphic_network.id : 'null' %>';
+        _listenerController     = new ListenerChangesController (graphic_network_id);
+        _controllerNetwork      = new ControllerComponents(raphael, graphic_network_id );
+        _controllerConnections  = new ConnectionsController(raphael);
+        COMPONENTS_IMAGES_SRC   = <%= Constants::COMPONENTS_IMAGES.to_json.html_safe %>;
+
+    });
+    var setAttributeParamsForObjects = function(model, attr_params){
+        var hash_params = {};
+        if(attr_params.constructor.toString().indexOf("Array") != -1){
+            var i;
+            for( i = 0; i < attr_params.length; i++ ){
+                hash_params[attr_params[i]] = '';
+            }
+
+        }else if(attr_params.constructor.toString().indexOf("Hash") != -1){
+            hash_params = attr_params;
+        }
+        DEFAULT_ATTR_PARAMS[model] = hash_params;
+
+    };
+
+
+
+</script>

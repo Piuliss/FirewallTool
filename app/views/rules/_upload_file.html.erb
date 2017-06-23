@@ -1,0 +1,21 @@
+
+  <%= form_tag(upload_file_rules_path,  multipart: 'true', remote: 'true') do %>
+      <%= file_field :upload, 'datafile', id: 'import-file' %>
+      <%= submit_tag "Cargar",id: 'button-upload', style: 'display: none;' %>
+  <% end %>
+
+
+<script type="text/javascript" >
+  //Add style to button to import file
+  $("#import-file").filestyle({buttonText: "Import",
+  	input: false,classButton: "btn btn-warning"});
+
+  //This function check when a file is selected and it sends to server 
+  $(document).ready(function() {
+    	$("#import-file").change(function(){
+    	    if ($("#import-file").val() != ""){
+    	    	$('#button-upload').click();
+    	    }
+    	}); 
+	});
+</script>

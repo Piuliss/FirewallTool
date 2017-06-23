@@ -1,0 +1,26 @@
+var rules = <%= @rules_object.to_json.html_safe %>;
+var policies = <%= @policies_object.to_json.html_safe %>;
+
+$.each(policies,function(index, policy){
+    var htmls = addPolicyRowToViewAndCode(null,policy.table, policy.chain, policy.job);
+    var view = htmls[0];
+    var code = htmls[1];
+    $("#all-policies").append(view);
+    $("#all-code-policies").append(code);
+});
+
+$.each(rules,function(index,rule){
+	
+	var htmls = addRuleRowToViewAndCode(null, rule.table, rule.chain,
+	                                    rule.input_device , rule.output_device,
+	                                    rule.source_ip, rule.source_mask,
+                                        rule.destination_ip, rule.destination_mask,
+	                                    rule.protocol,rule.source_port , 
+	                                    rule.destination_port,
+	                                    rule.job,rule.nat_action_ip, rule.nat_action_mask,
+	                                    [" ","eth0", "eth1"], [" ","eth0", "eth1"], rule.connection_states);
+	view = htmls[0];
+	code = htmls[1];
+	$("#all-rules").append(view);
+	$("#all-code-rules").append(code);
+});

@@ -1,0 +1,252 @@
+<div class="span12">
+
+  <ul class="nav nav-tabs">
+    <li class="active"><%= link_to "Policies", "#polices" %></li>
+    <li> <%= link_to "Rules", "#rules" %> </li>
+    <li> <%= link_to "Attack Mitigation", "#attack" %> </li>
+    <li> <%= link_to "Summary", "#code" %> </li>
+  </ul>
+
+
+  <div class="tab-content">
+    <div class="tab-pane active" id="polices">
+        <%= render "rules/polices", policies: policies, firewall: firewall %>
+    </div>
+
+    <div class="tab-pane" id="rules">
+      <%= render "rules/view", rules: rules, firewall: firewall %>
+    </div>
+
+    <div class="tab-pane" id="attack">
+      <%= render "rules/attack_mitigation", rules: rules, firewall: firewall %>
+    </div>
+
+    <div class="tab-pane" id="code">
+      <%= render "rules/code", rules: rules, policies: policies, firewall: firewall %>
+    </div>
+  </div>
+</div>
+
+<script type="text/javascript">
+    $(document).ready(function(){
+        var _form = $("#rule-form");
+        var _allViewRules = $("#all-rules");
+        var _allViewPolicies = $("#all-policies");
+        var _allCodeRules = $("#all-code-rules");
+        var _allCodePolicies = $("#all-code-policies");
+        var _chainByTable = <%= Rules::CHAINS_BY_TABLE.to_json.html_safe %>;
+        var _deviceByChain = <%= Rules::DEVICE_BY_CHAIN.to_json.html_safe %>;
+        var _jobsByChain = <%= Rules::JOBS_BY_CHAIN.to_json.html_safe %>;
+        var _policieJobsByChain = <%= Policies::JOBS_BY_CHAIN.to_json.html_safe %>;
+        var _addLink = $("#add");
+        var _addPolicyLink = $("#add-policy");
+        ORDER = <%= rules.size + 1 %>;
+        POLICY_ORDER = <%= policies.size + 1 %>;
+
+        /*FUNCTIONS*/
+        /*to generate chain options*/
+        var generateChainsFor = function(table, chains){
+            var html = "";
+            $.each(chains, function(index, value){
+                html += "<option value='" + value + "'>" + value + "</option>";
+            });
+            return html;
+        };
+
+        var natActionIpEnabling = function(element){
+            var thiz = element;
+            var order = thiz.data("order");
+            var natActionIPAndMask = $("input.nat-action[data-order='" + order + "']");
+            if(thiz.val() == "MASQUERADE" || thiz.val() == "DROP" || thiz.val() == "ACCEPT" || thiz.val() == "REJECT"){
+                natActionIPAndMask.prop("disabled", true);
+            }else{
+                natActionIPAndMask.prop("disabled", false);
+            }
+        };
+
+        var generateJobsFor = function(chain, table){
+            var html = "";
+            $.each(_jobsByChain[table][chain], function(index, value){
+                html += "<option value='" + value + "'>" + value + "</option>";
+            });
+            return html;
+        };
+
+        var generatePolicieJobFor = function (chain, table) {
+            var html = "";
+            $.each(_policieJobsByChain[table][chain], function(index, value){
+                html += "<option value='" + value + "'>" + value + "</option>";
+            });
+            return html;
+        }
+
+        /*LOGIC*/
+
+        /*when the user changes table on rules*/
+        _allViewRules.on("change", "[id^='table-']", function(){
+            var element = $(this);
+            var order = element.data("order");
+            var chain = $("#chain-" + order);
+            var job = $("#job-" + order);
+            var inputDevice = $("#input-device-" + order);
+            var outputDevice = $("#output-device-" + order);
+            var firstChain = _chainByTable[element.val()][0];
+            //enable or disable devices
+            inputDevice.attr("disabled", $.inArray(firstChain, _deviceByChain["input_device"]) < 0);
+            outputDevice.attr("disabled", $.inArray(firstChain, _deviceByChain["output_device"]) < 0);
+            var table = element.val();
+            chain.html(generateChainsFor(table, _chainByTable[table]));
+            job.html(generateJobsFor(firstChain, element.val()));
+            natActionIpEnabling(job);
+        });
+
+        /* when the user changes table on policies */
+        _allViewPolicies.on("change", "[id^='policy-table-']", function(){
+            var element = $(this);
+            var order = element.data("order");
+            var chain = $("#policy-chain-" + order);
+            var job = $("#policy-job-" + order);
+
+            var table = element.val();
+            chain.html(generateChainsFor(table, _chainByTable[table]));
+            job.html(generatePolicieJobFor(_chainByTable[table][0], table));
+        });
+
+        /**/
+        _allViewPolicies.on("change", "[id^='policy-chain']", function(){
+            var element = $(this);
+            var order = element.data("order");
+            var table = $("#policy-table-" + order);
+            var job = $("#policy-job-" + order);
+
+            job.html(generatePolicieJobFor(element.val(), table.val()));
+        });
+
+        /*when the user change chain */
+        _allViewRules.on("change", "[id^='chain-']", function(){
+            var element = $(this);
+            var order = element.data("order");
+            var table = $("#table-" + order);
+            var inputDevice = $("#input-device-" + order);
+            var outputDevice = $("#output-device-" + order);
+            var job = $("#job-" + order);
+            //enable or disable devices
+            inputDevice.attr("disabled", $.inArray(element.val(), _deviceByChain["input_device"]) < 0);
+            outputDevice.attr("disabled", $.inArray(element.val(), _deviceByChain["output_device"]) < 0);
+            job.html(generateJobsFor(element.val(), table.val()));
+            natActionIpEnabling(job);
+        });
+
+        /*when the user clicks on add rule*/
+        _addLink.on("click", function(event){
+            event.preventDefault();
+            var interfacesAmount = firewallConnectionsLimit();
+            var interfaces = buildInterfaces(interfacesAmount);
+            var htmls = addRuleRowToViewAndCode(null, "filter", "INPUT", "", "", "", "", "", "", "tcp_ip", "", "", "ACCEPT", "", "", interfaces, interfaces, []);
+            _allViewRules.append(htmls[0]);
+            _allCodeRules.append(htmls[1]);
+            $("#input-device-" + ORDER).attr("disabled", $.inArray("INPUT", _deviceByChain["input_device"]) < 0);
+            $("#output-device-" + ORDER).attr("disabled", $.inArray("INPUT", _deviceByChain["output_device"]) < 0);
+            var job = $("#job-" + ORDER);
+            natActionIpEnabling(job);
+        });
+
+        /* when the user clicks on add policy */
+        _addPolicyLink.on("click", function(event){
+            event.preventDefault();
+            var htmls = addPolicyRowToViewAndCode(null, "filter", "INPUT", "DROP");
+            _allViewPolicies.append(htmls[0]);
+            _allCodePolicies.append(htmls[1]);
+        });
+
+        /* mask for the ip inputs*/
+        $("#all-rules").on("keydown", ".rule-ip", function(e){
+            var element = $(this);
+
+            var numbers = element.val().split(".");
+            if (numbers.length >= 4) {
+                numbers = [numbers[0], numbers[1], numbers[2], numbers[3].split("/")[0], numbers[3].split("/")[1]];
+                var index = element.val().indexOf("_");
+
+                return checkIpNumber(e.which, numbers, index);
+            }
+            return true;
+
+        });
+
+        /* when the user try to enter a port number or a port range */
+        $("#all-rules").on("change", ".rule-port", function(){
+            var thiz = $(this);
+            var valid = checkPortNumberOrRange(thiz.val());
+            if(!valid){
+                thiz.val("");
+            }
+        });
+
+        /* when the user clicks on remove rule link */
+        $("#all-rules").on("click", "a[data-remove-rule]", function(event){
+            event.preventDefault();
+            $("tbody#all-rules tr[data-order='" + $(this).data("order") + "']").remove();
+            $("tbody#all-code-rules tr[data-order='" + $(this).data("order") + "']").remove();
+        });
+
+        /* when the user clicks on remove policy link */
+        $("#all-policies").on("click", "a[data-remove-policy]", function(event){
+            event.preventDefault();
+            $("tbody#all-policies tr[data-order='" + $(this).data("order") + "']").remove();
+            $("tbody#all-code-policies tr[data-order='" + $(this).data("order") + "']").remove();
+        });
+
+        /* when the users changes whatever on the rule view */
+        $("#all-rules").on("change", "input, select", function(){
+            var element = $(this);
+            var order = element.data("order");
+            var tr = $("tbody#all-rules tr[data-order='" + order + "']");
+            var table = tr.find("[name$='[table]']").val();
+            var chain = tr.find("[name$='[chain]']").val();
+            var inputDevice = tr.find("[name$='[input_device]']").val();
+            var outputDevice = tr.find("[name$='[output_device]']").val();
+            var sourceIp = tr.find("[name$='[source_ip]']").val();
+            var destinationIp = tr.find("[name$='[destination_ip]']").val();
+            var sourceMask = tr.find("[name$='[source_mask]']").val();
+            var destinationMask = tr.find("[name$='[destination_mask]']").val();
+            var protocol = tr.find("[name$='[protocol]']").val();
+            var sourcePort = tr.find("[name$='[source_port]']").val();
+            var destinationPort = tr.find("[name$='[destination_port]']").val();
+            var connectionStates = [];
+            $("input:checked[name$='[connection_states][]'][data-order='" + order + "']").each(function(index, value){
+                var element = $(value);
+                connectionStates.push(element.val());
+            });
+            var job = tr.find("[name$='[job]']").val();
+            var actionIp = tr.find("[name$='[nat_action_ip]']").val();
+            var actionMask = tr.find("[name$='[nat_action_mask]']").val();
+            var htmls = addRuleRowToViewAndCode(order, table, chain, inputDevice, outputDevice, sourceIp, sourceMask, destinationIp, destinationMask, protocol, sourcePort, destinationPort, job, actionIp, actionMask, ["eth0", "eth1"], ["eth0", "eth1"], connectionStates);
+            $("#all-code-rules tr[data-order='" + order + "']").replaceWith(htmls[1]);
+        });
+
+        /* when the users changes whatever on the policy view */
+        $("#all-policies").on("change", "input, select", function(){
+            var element = $(this);
+            var order = element.data("order");
+            var tr = $("tbody#all-policies tr[data-order='" + order + "']");
+            var table = tr.find("[name$='[table]']").val();
+            var chain = tr.find("[name$='[chain]']").val();
+            var job = tr.find("[name$='[job]']").val();
+            var htmls = addPolicyRowToViewAndCode(order, table, chain, job);
+            $("#all-code-policies tr[data-order='" + order + "']").replaceWith(htmls[1]);
+        });
+
+        $("#all-rules").on("change", "select[name$='[job]']", function(){
+            natActionIpEnabling($(this));
+        });
+
+        //managing tabs
+        $("ul li a").click(function (e) {
+            e.preventDefault();
+            $(this).tab("show");
+        });
+
+    });
+
+</script>

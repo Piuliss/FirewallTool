@@ -1,0 +1,193 @@
+
+<div id="navbar">
+  <%= render 'navbar', demos_and_examples: @demos_and_examples, graphic_network: @graphic_network %>
+</div>
+
+<div id="main-page">
+  <div class="row-fluid">
+    <div style="width: 10%; float: left;">
+      <div class="sidebar-objects" >
+        <ul class="text-center">
+          <% [{image: "laptop.png", title: "Laptop", type: "Laptop"},
+              {image: "pc.png", title: "Computer", type: "Pc"},
+              {image: "server.png", title: "Server", type: "Server"},
+              {image: "printer.png", title: "Printer", type: "Printer"},
+              {image: "hub.png", title: "Switcher", type: "Switch"},
+              {image: "router.png", title: "Router", type: "Router"},
+              {image: "internet.png", title: "Internet", type: "Internet"},
+              {image: "firewall.png", title: "Firewall", type: "Firewall"}].each do |data| %>
+              <li><%= image_tag data[:image],   title: data[:title],    size: '50x50', class: 'draggable ', data: {type: data[:type]} %></li>
+          <% end %>
+        </ul>
+        <hr class="sidebar-separator"/>
+        <ul class="text-center">
+          <li><%= image_tag 'connect.png', title: "Connection", size: '30x30', class: 'connection' %></li>
+          <!--<li><%#= image_tag 'wifi.png',     size: '64x64', class: 'draggable' %></li>-->
+        </ul>
+        <hr class="sidebar-separator"/>
+        <ul class="text-center">
+          <% [{image: "package.png", title: "Package", type: "NormalPackage"},
+              {image: "attack.png", title: "Attack Package", type: "AttackPackage"},
+              {image: "package-tcp.png", title: "1 TCP Package(12000 bits)", type: "TcpSimple"},
+              {image: "attack-tcp.png", title: "More than two TCP(12000 bits) Attack Package", type: "TcpAttack"},
+              {image: "package-udp.png", title: "1 UDP Package(4096 bits)", type: "UdpSimple"},
+              {image: "attack-udp.png", title: "More than two UDP(4096 bits) Attack Package", type: "UdpAttack"},
+              {image: "package-icmp.png", title: "1 ICMP Package(592 bits)", type: "IcmpSimple"},
+              {image: "attack-icmp.png", title: "More than two ICMP(592 bits) Attack Package", type: "IcmpAttack"},
+             ].each do |data| %>
+          <li><%= image_tag data[:image], title: data[:title], size: '30x30', class: 'draggable-package', data: {type: data[:type]} %></li>
+          <% end %>
+        </ul>
+        <hr class="sidebar-separator"/>
+        <ul class="text-center">
+          <li><%= link_to(image_tag("clock.png", size: "30x30", title: "Options, set simulation time"), "#options-modal", id: "btn-config-simulation", data: {toggle: :modal}) %></li>
+          <li id="firewall-image"><%= link_to(image_tag(@firewall.new_record? ? "radar-disabled.png" : "radar.png", size: "30x30", title: @firewall.new_record? ? "You don't have a firewall saved" : "Port Scan"), @firewall.new_record? ? "#" : "#port-scan-modal", id: "scan-btn", data: {toggle: :modal}) %></li>
+        </ul>
+        <hr class="sidebar-separator"/>
+        <div class="text-center">
+          <%= link_to "#", class: "btn btn-primary btn-side-bar", id: 'btn-run-simulation', disabled: true do %>
+              <i class="icon-play icon-white"></i>Run
+          <% end %>
+          <%= image_tag 'loader.gif', id: "loading-image", style: 'display: none;' %>
+          <%= link_to "#", class: "btn btn-mini btn-success", id: 'btn-reset-simulation', style: "margin-top: 5px;", disabled: true do %>
+              <i class="icon-repeat icon-white"></i>Restart
+          <% end %>
+        </div>
+        <hr class="sidebar-separator"/>
+        <ul class="text-center">
+          <li><%= link_to(image_tag("debug-disabled.png", size: "30x30"), "#", id: "debugger-link", title: 'Debug Firewall') %></li>
+        </ul>
+        <br/>
+      </div>
+    </div>
+    <div style="width: 90%; float: left;">
+      <div class="row-fluid">
+        <div class="main-plain" id="holder">
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="row-fluid debugger-container" style="display: none;">
+    <div class="span1 text-center" style="line-height: 75px;">
+      <%= image_tag("watch.png", size: "30x30") %>
+    </div>
+    <div class="span11">
+      <table class="debugger-table">
+        <tbody>
+        <% table = [[{label: "Current Time(s):", id: "clock-id", value: 0},
+                     {label: "Aprox. Duration(s):", id: "duration-id", value: 0},
+                     {label: "Packages/s:", id: "package-second-id", value: 0}],
+
+                    [{label: "Accepted:", id: "accept-id", value: 0},
+                     {label: "Accepted TCP:", id: "tcp-accept-id", value: 0},
+                     {label: "Accepted UDP:", id: "udp-accept-id", value: 0},
+                     {label: "Accepted ICMP:", id: "imcp-accept-id", value: 0}],
+
+                    [{label: "Dropped :", id: "drop-id", value: 0},
+                     {label: "Dropped TCP:", id: "tcp-drop-id", value: 0},
+                     {label: "Dropped UDP:", id: "udp-drop-id", value: 0},
+                     {label: "Dropped ICMP:", id: "icmp-drop-id", value: 0}],
+
+                    [{label: "Max ETH(bits/s):", id: "eth-max-container", value: 100000},
+                     {label: "ETHO(bits):", id: "eth0-id", value: 0},
+                     {label: "ETH1(bits):", id: "eth1-id", value: 0},
+                     {label: "ETH2(bits):", id: "eth2-id", value: 0}]] %>
+        <% table.each do |data_group| %>
+            <tr>
+              <% data_group.each do |data| %>
+                  <td>
+                    <%= label_tag "label", data[:label], class: "inline" %>
+                    <div class="inline" id="<%= data[:id] %>">
+                      <%= data[:value] %>
+                    </div>
+                  </td>
+              <% end %>
+            </tr>
+        <% end %>
+        </tbody>
+      </table>
+    </div>
+  </div>
+  <br/>
+
+  <div id="policy-and-rules-container" style="display: none;">
+      <div class="row-fluid">
+        <%= render 'show_input_rule'%>
+      </div>
+      <br>
+
+      <div id="rules-container" class="row-fluid">
+        <%= render "rules/view_and_code", rules: @rules, policies: @policies, firewall: @firewall %>
+      </div>
+  </div>
+
+</div>
+
+<div id="modal-section">
+  <div id="options-modal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-header">
+      <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+      <h3 id="myModalLabel">Simulation Time</h3>
+    </div>
+    <div class="modal-body">
+      <h5>Attack simulation</h5>
+      <div id="option-form-container">
+          <%= render "options/option_form", option: @option %>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn" data-dismiss="modal" aria-hidden="true">Cancel</button>
+      <button class="btn btn-primary" id="save-option-changes" data-dismiss="modal">Save Changes</button>
+    </div>
+  </div>
+</div>
+<div id="port-scan-modal-container">
+  <%= render("port_scan_modal", firewall: @firewall) %>
+</div>
+<%= render 'script' %>
+<div id="open-modal-container">
+    <%= render "open_modal", graphic_networks: @graphic_networks %>
+</div>
+
+<script type="text/javascript">
+  $(document).ready(function(){
+      var debuggerContainer = $(".debugger-container");
+      var debuggerLink = $("#debugger-link");
+      var image = debuggerLink.find("img");
+
+      /*FUNCTIONS*/
+      var debuggerContainerManager = function(){
+          var add = "/assets/debug-add.png";
+          var remove = "/assets/debug-remove.png";
+          if(image.attr("src") == add){
+              debuggerContainer.slideDown(250);
+              image.attr("src", remove);
+          }else if(image.attr("src") == remove){
+              debuggerContainer.slideUp(250);
+              image.attr("src", add);
+          }else{
+              debuggerContainer.slideUp(250);
+          }
+      };
+      debuggerContainerManager();
+
+      /* this function handle when the user clicks on close buttons from modal for option */
+      $("#options-modal button[aria-hidden='true']").on("click", function(){
+          $("#option-form input, #option-form select").each(function(index, element){
+              var thiz = $(element)
+              thiz.val(thiz.data("value"));
+          });
+      });
+      $("#save-option-changes").on("click", function(){
+          $("#option-form input, #option-form select").each(function(index, element){
+              var thiz = $(element)
+              thiz.data("value", thiz.val());
+          });
+      });
+
+      debuggerLink.on("click", function(event){
+        event.preventDefault();
+        debuggerContainerManager();
+      });
+  });
+</script>

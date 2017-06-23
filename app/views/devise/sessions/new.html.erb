@@ -1,0 +1,79 @@
+<div class="row-fluid  text-center">
+  <div class="span12">
+    <h1 style="color:white; font-size: 18px">Amazing tool for students and professionals of the computers network area!</h1>
+  </div>
+</div>
+<div class="row-fluid text-center">
+  <div class="span6 text-right">
+    <br/><br/>
+
+    <div class="row-fluid" style="color: white;margin-top: -48px;">
+      <h4>Enter to FirewallTools</h4>
+    <%= form_for(resource, as: resource_name, url: session_path(resource_name)) do |f| %>
+        <div class="row-fluid">
+          <%= f.email_field :email, autofocus: true, placeholder: "email" %>
+        </div>
+        <div class="row-fluid">
+          <%= f.password_field :password, placeholder: "password" %>
+        </div>
+
+        <div class="row-fluid">
+          <% if devise_mapping.rememberable? %>
+            <%= f.label :remember_me, style: "display: inline;" do %>
+                <%= f.check_box :remember_me %>
+                Remember me?
+            <% end %>
+          <% end %>
+          <%= f.submit "Login", class: "btn btn-primary btn-small" %>
+        </div>
+        <br/>
+        <div class="row-fluid">
+            <%= link_to "Create a new account", new_user_registration_path %>
+        </div>
+    <% end %>
+    </div>
+  </div>
+  <div class="span6 text-left" style="margin-top: -32px">
+    <%= image_tag("logo.png") %>
+  </div>
+</div>
+<div class="row-fluid">
+  <div class="span12 text-center" >
+    <ul class="bxslider">
+      <li><img src="<%= image_path('home.png') %>" /></li>
+      <li><img src="<%= image_path('home1.png') %>" /></li>
+      <li><img src="<%= image_path('home2.png') %>" /></li>
+      <li><img src="<%= image_path('home3.png') %>" /></li>
+      <li><img src="<%= image_path('home4.png') %>" /></li>
+      <li><img src="<%= image_path('home5.png') %>" /></li>
+      <li><img src="<%= image_path('home6.png') %>" /></li>
+      <li><img src="<%= image_path('home7.png') %>" /></li>
+    </ul>
+  </div>
+</div>
+<div class="row-fluid">
+  <div class="span12 text-center">
+    <h1 style="color: white; font-size: 18px">FirewallTools in action..</h1>
+    <video  width="50%" controls>
+      <source src="<%=video_path('firewalltools.mp4')%>" type="video/mp4">
+      Your browser does not support HTML5 video.
+    </video>
+  </div>
+</div>
+<div class="row-fluid">
+  <div class="span12 text-center">
+    <h5 style="color: white">* Design a computers network</h5></br>
+    <h5 style="color: white">* Program your firewall using iptables </h5></br>
+    <h5 style="color: white">* Run simple simulation of the packets flow</h5></br>
+    <h5 style="color: white">* Check your iptables rules using the debugger</h5></br>
+    <h5 style="color: white">* Scan your opened ports based on the iptables rules</h5></br>
+  </div>
+</div>
+<%#= render "devise/shared/links" %>
+<script>
+$(function(){
+    $('.bxslider').bxSlider(
+            { auto: true, autoControls: true,  slideWidth: 550, slideHeight: 330}
+    );
+})
+</script>

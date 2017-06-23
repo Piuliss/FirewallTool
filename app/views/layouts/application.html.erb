@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>FirewallTools</title>
+  <%= stylesheet_link_tag    "application", media: "all", "data-turbolinks-track" => true %>
+  <%= javascript_include_tag "application", "data-turbolinks-track" => true %>
+  <%= csrf_meta_tags %>
+  <link rel="shortcut icon" href="<%=image_path('firewalltools.ico')%>" type="image/x-icon">
+  <link rel="icon" href="<%=image_path('firewalltools.ico')%>" type="image/x-icon">
+</head>
+<body>
+<div id="message-container" style="position: fixed; right: 0; padding: 60px;">
+    <%= flash_message %>
+</div>
+
+<div class="container">
+  <%= yield %>
+</div>
+
+
+<script type="text/javascript">
+  $(document).ready(function(){
+      messageEffect();
+      // please note, that IE11 now returns undefined again for window.chrome
+      var isChromium = window.chrome,
+              vendorName = window.navigator.vendor;
+      if(isChromium !== null && isChromium !== undefined && vendorName === "Google Inc.") {
+          // is Google chrome
+      } else {
+          alert("Please! use Chrome browser to work with FirewallTools. Today FirewallTools is not supporting another browser. Thanks!")
+      }
+  });
+</script>
+
+</body>
+</html>
