@@ -19,4 +19,4 @@ Installation
 * `rake db:migrate`
 * `rake db:seed`
 * `rails s`
-* go to the link http://localhost:3000/ in an CHROME browser user= tripodevs@gmail.com, password= password
+* go to the link http://localhost:3000/ in the CHROME browser user= tripodevs@gmail.com, password= password
