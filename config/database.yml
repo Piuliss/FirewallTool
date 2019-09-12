@@ -8,7 +8,7 @@ development:
   encoding: unicode
   database: FT_DEV
   pool: 5
-  host: localhost
+  host: <%= ENV['POSTGRES_HOST'] %>
   port: 5432
   username: postgres
   password: postgres
@@ -21,7 +21,7 @@ test:
   encoding: unicode
   database: FT_TEST
   pool: 5
-  host: localhost
+  host: <%= ENV['POSTGRES_HOST'] %>
   port: 5432
   username: postgres
   password: postgres

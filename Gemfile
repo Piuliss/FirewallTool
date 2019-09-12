@@ -4,7 +4,7 @@ source 'https://rubygems.org'
 gem 'rails', '4.0.0'
 
 # Use pg as the database for Active Record
-gem 'pg'
+gem 'pg', '~> 0.11'
 gem 'foreigner'
 
 gem 'bitmask_attributes', git: "https://github.com/jigfox/bitmask_attributes.git", :branch => 'rails4'
