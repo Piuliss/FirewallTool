@@ -20,3 +20,12 @@ Installation
 * `rake db:seed`
 * `rails s`
 * go to the link http://localhost:3000/ in the CHROME browser user= tripodevs@gmail.com, password= password
+
+
+Docker 
+-------
+* `cd FirewallTool/`
+* `docker-compose build`
+* `docker-compose run web bundle install`
+* `docker-compose run web rake db:create db:migrate db:seed`
+* `docker-compose up`
